@@ -6,7 +6,7 @@ def home_page():
     st.title("Welcome to the airbnb pricing app") 
     st.markdown( """## Find the best price to rent your flat/room!""") 
 
-    logo = "images/app_logo.png" # our logo, stored in images, maybe change logo or create one of our own
+    logo = "images/logo.png" # our logo, stored in images, maybe change logo or create one of our own
     col1, col2, col3 = st.columns([1, 2, 1]) # to center the image
     with col2: 
         st.image(logo, width=380) # logo visualization
