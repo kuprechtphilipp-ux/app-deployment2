@@ -24,6 +24,17 @@ def main():
         elif st.session_state['page'] == 'login':
             login_page()  # Show login page
     else:  # If the user is logged in, show the dashboard
+        
+        with st.sidebar:
+            # --- NEW: LOGO ---
+            LOGO_PATH = "images/app_logo.png" 
+            try:
+                st.image(LOGO_PATH, use_column_width=True)
+            except FileNotFoundError:
+                st.warning("Logo image not found.")
+            
+            st.markdown("---") 
+            
         # Sidebar navigation for logged-in users
         page = st.sidebar.radio("Select a page", [
             "Airbnb", 
