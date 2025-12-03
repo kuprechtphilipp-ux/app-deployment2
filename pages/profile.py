@@ -147,22 +147,6 @@ def profile_page():
 
     # Update Amenities (stored as list)
     available_amenities = [
-        "WiFi", 
-        "Kitchen", 
-        "Bathtub", 
-        "Balcony",           # <--- 'Balcony' added for debuging
-        "Private entrance",
-        "City skyline view",
-        "Elevator", 
-        "Air conditioning", 
-        "Pets allowed", 
-        "TV", 
-        "Washer", "Dryer", "Heating", "Parking" # added for debugging
-    ]
-
-    # Update Amenities (stored as list)
-    # ZUSAMMENFASSUNG ALLER VERWENDETEN AMENITIES ZUR BEHEBUNG DES STREAMLIT EXCEPTION:
-    available_amenities = [
         "Kitchen", 
         "WiFi", 
         "Bathtub", 
