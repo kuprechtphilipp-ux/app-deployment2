@@ -1,0 +1,35 @@
+{
+    "test": {
+        "email": "test",
+        "password": "test",
+        "host_is_superhost": true,
+        "host_listings_count": 1,
+        "host_identity_verified": true,
+        "bathrooms": 1,
+        "bedrooms": 2,
+        "arrondissement": 4,
+        "room_type": "Entire home/apt",
+        "num_rooms": 3,
+        "amenities": [
+            "WiFi"
+        ]
+    },
+    "Philipp_Kuprecht": {
+        "email": "philipp.kuprecht@student.unisg.ch",
+        "password": "1801",
+        "host_is_superhost": true,
+        "host_listings_count": 3,
+        "host_identity_verified": true,
+        "bathrooms": 1,
+        "bedrooms": 1,
+        "arrondissement": 3,
+        "room_type": "Hotel room",
+        "num_rooms": 1,
+        "amenities": [
+            "Kitchen",
+            "WiFi",
+            "Bathtub",
+            "Balcony"
+        ]
+    }
+}
