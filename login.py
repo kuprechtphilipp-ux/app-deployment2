@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import os
+from computations import label_to_amenity_col
+
 
 # Define the path to the JSON file where user data is stored (refer to the Class - profiles)
 PROFILES_DATA_PATH = "data/profiles.json"
@@ -97,8 +99,7 @@ def login_page():
                 
 
             #st.subheader("Amenities")
-            # need to be in this format for data
-            amenities = st.multiselect("Select Amenities", ["Kitchen", "WiFi", "Bathtub", "Elevator", "Air conditioning",b"Pets allowed", "TV", "Private entrance", "Balcony", "City skyline view"])
+            amenities = st.multiselect("Select Amenities", list(label_to_amenity_col.keys()))
 
             #st.subheader("Additional Information")
 
