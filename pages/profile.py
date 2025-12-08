@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import os
+from computations import label_to_amenity_col
+
 
 # Paths for JSON files
 PROFILE_DATA_PATH = "data/profiles.json"
@@ -146,27 +148,23 @@ def profile_page():
         st.success(f"Number of rooms updated to {new_num_rooms}")
 
     # Update Amenities (stored as list)
-    available_amenities = [
-        "Kitchen", 
-        "WiFi", 
-        "Bathtub", 
-        "Elevator", 
-        "Air conditioning", 
-        "Pets allowed", 
-        "TV", 
-        "Private entrance", 
-        "Balcony", 
-        "City skyline view",
-        "Washer",    # Aus der alten Profil-Liste
-        "Dryer",     # Aus der alten Profil-Liste
-        "Heating",   # Aus der alten Profil-Liste
-        "Parking"    # Aus der alten Profil-Liste
-        # Stellen Sie sicher, dass keine Duplikate enthalten sind
-    ]
+    available_amenities = list(label_to_amenity_col.keys())
 
-    current_amenities = profile_data[username].get("amenities", [])
+    saved_amenities = profile_data[username].get("amenities", [])
 
-    new_amenities = st.multiselect("Select amenities", available_amenities, default=current_amenities)
+    # --> Normalize saved amenities so they match available_amenities
+    normalized_amenities = []
+    for a in saved_amenities:
+        if a in available_amenities:
+            normalized_amenities.append(a)
+        else:
+            # --> case-insensitive fallback match
+            for opt in available_amenities:
+                if opt.lower() == a.lower():
+                    normalized_amenities.append(opt)
+                    break
+
+    new_amenities = st.multiselect("Select amenities", available_amenities, default=normalized_amenities)
 
     if st.button("Update Amenities"):
         profile_data[username]["amenities"] = new_amenities
