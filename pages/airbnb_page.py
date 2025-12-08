@@ -100,9 +100,14 @@ def airbnb_page():
         for k, v in sidebar_defaults.items(): st.session_state[k] = v
         st.session_state["sb_reset_requested"] = False
 
-    # Initialize any missing keys (first run) 
+    # Initialize any missing keys (first run)
     for k, v in sidebar_defaults.items():
-        if k not in st.session_state: st.session_state[k] = v
+        if k == "sb_amenities":
+            # Clean amenities: only allowed options, no invalid defaults
+            st.session_state[k] = [a for a in v if a in amenities_options]
+        else:
+            if k not in st.session_state:
+                st.session_state[k] = v
 
     
     # Minimal Styling 
