@@ -11,7 +11,7 @@
         "room_type": "Entire home/apt",
         "num_rooms": 3,
         "amenities": [
-            "WiFi"
+            "Wifi"
         ]
     },
     "Philipp_Kuprecht": {
@@ -27,7 +27,7 @@
         "num_rooms": 1,
         "amenities": [
             "Kitchen",
-            "WiFi",
+            "Wifi",
             "Bathtub",
             "Balcony"
         ]
