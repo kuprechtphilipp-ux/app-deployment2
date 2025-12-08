@@ -47,10 +47,15 @@ def login_page():
             submit_button = st.form_submit_button("Login")
 
             if submit_button:
-                if username and password:
                     if validate_user(username, password):
                         st.session_state['logged_in'] = True
                         st.session_state['username'] = username
+                    
+                        # IMPORTANT: Clear all old sidebar widget states
+                        for k in list(st.session_state.keys()):
+                            if k.startswith("sb_"):
+                                del st.session_state[k]
+                    
                         st.rerun()
 
                     else:
