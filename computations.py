@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import pickle
-from login import load_data
 import numpy as np
 
 # script to run all the computations - needed to then display price, profit, etc
@@ -11,49 +10,9 @@ model_cleaning_costs = pickle.load(open("ml_models/predict_cost_of_cleaning.sav"
 model_renting_price = pickle.load(open("ml_models/predict_renting_price.sav", "rb"))
 
 
-# given code of aurel this are the inputs that should go into the model after one hot encoding for price prediction
 
-airbnb_features = [
-    "host_is_superhost",
-    "host_listings_count",
-    "host_identity_verified",
-    "bathrooms_text",
-    "bedrooms",
-    "Arrondissement_10e",
-    "Arrondissement_11e",
-    "Arrondissement_12e",
-    "Arrondissement_13e",
-    "Arrondissement_14e",
-    "Arrondissement_15e",
-    "Arrondissement_16e",
-    "Arrondissement_17e",
-    "Arrondissement_18e",
-    "Arrondissement_19e",
-    "Arrondissement_1er",
-    "Arrondissement_20e",
-    "Arrondissement_2e",
-    "Arrondissement_3e",
-    "Arrondissement_4e",
-    "Arrondissement_5e",
-    "Arrondissement_6e",
-    "Arrondissement_7e",
-    "Arrondissement_8e",
-    "Arrondissement_9e",
-    "room_Entire home/apt",
-    "room_Hotel room",
-    "room_Private room",
-    "room_Shared room",
-    "has_kitchen",
-    "has_wifi",
-    "has_bathtub",
-    "has_elevator",
-    "has_air_conditioning",
-    "has_pets_allowed",
-    "has_tv",
-    "has_private_entrance",
-    "has_balcony",
-    "has_city_view",
-]
+# (NEW) Load model feature columns dynamically
+airbnb_features = list(model_airbnb_price.feature_names_in_)
 
 
 rent_features = [
@@ -81,6 +40,25 @@ rent_features = [
     "Type de locationom_meublé",
     "Type de locationom_non meublé"
 ]
+
+
+#Cleaning the columns names for better UX
+def clean_amenity_name(col):
+    # Convert model column name to a clean user-friendly label
+    x = col.replace("amenity__", "").rstrip("_")
+    x = x.replace("_", " ")
+    x = x.replace("u2013", "–")
+    return x.strip().title()
+
+def build_amenity_maps():
+    amenity_cols = [c for c in airbnb_features if c.startswith("amenity__")]
+    label_to_col = {clean_amenity_name(c): c for c in amenity_cols}
+    col_to_label = {c: clean_amenity_name(c) for c in amenity_cols}
+    return label_to_col, col_to_label
+
+label_to_amenity_col, amenity_col_to_label = build_amenity_maps()
+
+
 
 
 def build_airbnb_feature_df(user_profile: dict) -> pd.DataFrame:
@@ -121,19 +99,19 @@ def build_airbnb_feature_df(user_profile: dict) -> pd.DataFrame:
     room_type = user_profile.get("room_type", "Entire home/apt")
     room_categories = ["Entire home/apt", "Hotel room", "Private room", "Shared room"]
 
-    # amenities 
+    # amenities (still needed?)
     amenities = user_profile.get("amenities", []) or []
-
-    def normalize(s: str) -> str:
-        return s.lower().replace("-", "").replace(" ", "").strip()
-
-    amenities_norm = [normalize(a) for a in amenities]
-
-    def has_amenity(name: str) -> int:
-        return int(normalize(name) in amenities_norm)
 
     # start with all zeros
     feat = {name: 0 for name in airbnb_features}
+
+    # amenities dynamic one-hot
+    for label in amenities:
+        model_col = label_to_amenity_col.get(label)
+        if model_col in feat:
+            feat[model_col] = 1
+
+
 
     # simple numeric fields
     feat["host_is_superhost"] = host_is_superhost
@@ -153,17 +131,12 @@ def build_airbnb_feature_df(user_profile: dict) -> pd.DataFrame:
         if col in feat:
             feat[col] = int(room_type == r)
 
-    # amenities one-hot 
-    feat["has_kitchen"] = has_amenity("Kitchen")
-    feat["has_wifi"] = has_amenity("Wifi")     
-    feat["has_bathtub"] = has_amenity("Bathtub")
-    feat["has_elevator"] = has_amenity("Elevator")
-    feat["has_air_conditioning"] = has_amenity("Air conditioning")
-    feat["has_pets_allowed"] = has_amenity("Pets allowed")
-    feat["has_tv"] = has_amenity("TV")
-    feat["has_private_entrance"] = has_amenity("Private entrance")
-    feat["has_balcony"] = has_amenity("Balcony")
-    feat["has_city_view"] = has_amenity("City skyline view")
+    # amenities dynamic one-hot
+    for label in amenities:
+        model_col = label_to_amenity_col.get(label)
+        if model_col in feat:
+            feat[model_col] = 1
+
 
     # build DataFrame in the exact column order to make sure it works for the model
     row = [[feat[col] for col in airbnb_features]]
