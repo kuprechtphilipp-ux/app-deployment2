@@ -149,20 +149,22 @@ def profile_page():
 
     # Update Amenities (stored as list)
     available_amenities = list(label_to_amenity_col.keys())
-
-    # Load saved amenities
     saved_amenities = profile_data[username].get("amenities", [])
     
-    # Only keep values that appear in new available_amenities
-    normalized_amenities = []
+    # Normalize saved amenities
+    normalized_defaults = []
     for a in saved_amenities:
         for opt in available_amenities:
-            if a.lower() == opt.lower():   # case-insensitive match
-                normalized_amenities.append(opt)
+            if a.lower() == opt.lower():
+                normalized_defaults.append(opt)
                 break
     
-    new_amenities = st.multiselect("Select amenities", available_amenities, default=normalized_amenities)
-
+    new_amenities = st.multiselect(
+        "Select amenities",
+        available_amenities,
+        default=normalized_defaults
+    )
+    
 
     if st.button("Update Amenities"):
         profile_data[username]["amenities"] = new_amenities
