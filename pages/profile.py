@@ -150,21 +150,19 @@ def profile_page():
     # Update Amenities (stored as list)
     available_amenities = list(label_to_amenity_col.keys())
 
+    # Load saved amenities
     saved_amenities = profile_data[username].get("amenities", [])
-
-    # --> Normalize saved amenities so they match available_amenities
+    
+    # Only keep values that appear in new available_amenities
     normalized_amenities = []
     for a in saved_amenities:
-        if a in available_amenities:
-            normalized_amenities.append(a)
-        else:
-            # --> case-insensitive fallback match
-            for opt in available_amenities:
-                if opt.lower() == a.lower():
-                    normalized_amenities.append(opt)
-                    break
-
+        for opt in available_amenities:
+            if a.lower() == opt.lower():   # case-insensitive match
+                normalized_amenities.append(opt)
+                break
+    
     new_amenities = st.multiselect("Select amenities", available_amenities, default=normalized_amenities)
+
 
     if st.button("Update Amenities"):
         profile_data[username]["amenities"] = new_amenities
