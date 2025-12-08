@@ -52,19 +52,30 @@ def airbnb_page():
 
     room_type_options = ["Entire home/apt", "Private room", "Shared room", "Hotel room"]
     saved_room_type = user_profile.get("room_type", "Entire home/apt")
-    
 
-    amenities_options = ["Kitchen", "WiFi", "Bathtub", "Elevator", "Air conditioning", "Pets allowed", "TV", "Private entrance", "Balcony", "City skyline view"]
+    
+    #ameities options in airbnb_page
+    from computations import label_to_amenity_col
+
+    amenities_options = list(label_to_amenity_col.keys())
+
     user_amenities = user_profile.get("amenities", [])
     
-    # need to have a certain format because of login data and how data is saved, need to be in match login format!! --> maybe not needed anymore: changed the login stuff to match this
-    def normalize(text):
-        return text.lower().replace("-", "").replace(" ", "").strip()
-    
-    # normalized version of user amenities
-    user_normalized = {normalize(a) for a in user_amenities}
-    # amenities that should appear selected by default
-    default_amenities = [opt for opt in amenities_options if normalize(opt) in user_normalized]
+    # Normalize saved amenities (fixes WiFi → Wifi mismatch)
+    normalized_amenities = []
+    for a in user_amenities:
+        if a in amenities_options:
+            normalized_amenities.append(a)
+        else:
+            # try case-normalization
+            for opt in amenities_options:
+                if opt.lower() == a.lower():
+                    normalized_amenities.append(opt)
+                    break
+
+    default_amenities = normalized_amenities
+
+
 
     # Build sidebar defaults dictionary 
     sidebar_defaults = {
